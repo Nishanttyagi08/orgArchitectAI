@@ -1,0 +1,344 @@
+<template>
+  <lightning-card title="Object Explorer" icon-name="standard:data_model">
+    <p class="slds-p-horizontal_medium slds-p-bottom_medium">
+      Explore objects, fields, and relationships available to your user. Only
+      readable, queryable objects and readable fields are shown.
+    </p>
+    <div class="explorer slds-p-horizontal_medium slds-p-bottom_medium">
+      <section class="object-panel" aria-label="Object selection">
+        <lightning-input
+          type="search"
+          label="Search objects"
+          value={objectSearch}
+          onchange={handleObjectSearch}
+        ></lightning-input>
+        <lightning-combobox
+          label="Object type"
+          value={objectFilter}
+          options={filterOptions}
+          onchange={handleObjectFilter}
+        ></lightning-combobox>
+        <p class="slds-m-vertical_small" role="status">
+          {objectCount} matching objects
+        </p>
+        <template lwc:if={isLoadingObjects}>
+          <div class="loading">
+            <lightning-spinner
+              alternative-text="Loading objects"
+              size="small"
+            ></lightning-spinner>
+          </div>
+        </template>
+        <template lwc:if={objectsError}>
+          <div role="alert" class="slds-text-color_error">{objectsError}</div>
+          <lightning-button
+            label="Retry objects"
+            onclick={loadObjects}
+            class="slds-m-top_small"
+          ></lightning-button>
+        </template>
+        <template lwc:if={noObjects}
+          ><p>No objects match your search and access permissions.</p></template
+        >
+        <ul class="object-list" aria-label="Objects">
+          <template for:each={visibleObjects} for:item="object">
+            <li key={object.apiName}>
+              <button
+                type="button"
+                class={object.buttonClass}
+                data-name={object.apiName}
+                aria-pressed={object.selected}
+                onclick={handleObjectSelect}
+              >
+                <span class="object-label">{object.label}</span>
+                <span class="object-api">{object.apiName}</span>
+                <span class="object-kind">{object.kind}</span>
+              </button>
+            </li>
+          </template>
+        </ul>
+        <template lwc:if={showObjectPaging}>
+          <div class="paging">
+            <lightning-button
+              label="Previous objects"
+              disabled={firstObjectPage}
+              onclick={handlePreviousObjects}
+            ></lightning-button>
+            <span>{objectPageLabel}</span>
+            <lightning-button
+              label="Next objects"
+              disabled={lastObjectPage}
+              onclick={handleNextObjects}
+            ></lightning-button>
+          </div>
+        </template>
+      </section>
+      <section
+        class="detail-panel"
+        aria-label="Object details"
+        aria-busy={isLoadingDetails}
+      >
+        <template lwc:if={showPrompt}
+          ><p class="slds-p-around_large">
+            Select an object to inspect its fields and relationships.
+          </p></template
+        >
+        <template lwc:if={isLoadingDetails}>
+          <div class="loading">
+            <lightning-spinner
+              alternative-text="Loading object details"
+              size="small"
+            ></lightning-spinner>
+          </div>
+        </template>
+        <template lwc:if={detailsError}>
+          <div role="alert" class="slds-text-color_error">{detailsError}</div>
+          <lightning-button
+            label="Retry details"
+            onclick={handleRetryDetails}
+            class="slds-m-top_small"
+          ></lightning-button>
+        </template>
+        <template lwc:if={details}>
+          <h2 class="slds-text-heading_medium">{details.label}</h2>
+          <p class="slds-text-color_weak slds-m-bottom_small">
+            {details.apiName}
+          </p>
+          <lightning-badge label={objectKind}></lightning-badge>
+          <div class="summary-grid slds-m-vertical_medium" role="status">
+            <div class="summary-card">
+              <span class="summary-number">{fieldCount}</span
+              ><span>Readable fields</span>
+            </div>
+            <div class="summary-card">
+              <span class="summary-number">{relationshipCount}</span
+              ><span>Parent reference fields</span>
+            </div>
+            <div class="summary-card">
+              <span class="summary-number">{recordTypeCount}</span
+              ><span>Available record types</span>
+            </div>
+          </div>
+          <lightning-tabset active-tab-value={activeTab}>
+            <lightning-tab
+              label="Overview"
+              value="overview"
+              onactive={handleTabActive}
+            >
+              <h3 class="section-heading">Object overview</h3>
+              <dl class="property-grid">
+                <template for:each={overviewProperties} for:item="property">
+                  <div key={property.label} class="property">
+                    <dt>{property.label}</dt>
+                    <dd>{property.value}</dd>
+                  </div>
+                </template>
+              </dl>
+              <p class="slds-text-color_weak slds-m-top_medium">
+                Access reflects your current user. Select Fields to inspect
+                individual definitions, or Relationships to explore connected
+                objects.
+              </p>
+            </lightning-tab>
+            <lightning-tab
+              label="Fields"
+              value="fields"
+              onactive={handleTabActive}
+            >
+              <template lwc:if={selectedField}>
+                <section
+                  class="field-inspector slds-m-bottom_medium"
+                  data-inspector
+                  tabindex="-1"
+                  aria-label="Field details"
+                >
+                  <div class="inspector-heading">
+                    <div>
+                      <h3 class="section-heading">{selectedField.label}</h3>
+                      <p class="slds-text-color_weak">Field definition</p>
+                    </div>
+                    <lightning-button
+                      label="Close field details"
+                      onclick={handleCloseField}
+                    ></lightning-button>
+                  </div>
+                  <dl class="property-grid">
+                    <template
+                      for:each={selectedFieldProperties}
+                      for:item="property"
+                    >
+                      <div key={property.label} class="property">
+                        <dt>{property.label}</dt>
+                        <dd>{property.value}</dd>
+                      </div>
+                    </template>
+                  </dl>
+                  <template lwc:if={selectedField.inlineHelpText}>
+                    <p class="slds-m-top_medium">
+                      <strong>Help text: </strong>{selectedField.inlineHelpText}
+                    </p>
+                  </template>
+                  <p class="slds-text-color_weak slds-m-top_small">
+                    Length, precision, and scale apply according to the field's
+                    data type. Allows null describes schema nullability.
+                  </p>
+                </section>
+              </template>
+              <p class="slds-m-bottom_small">
+                Select a field label to inspect its definition.
+              </p>
+              <lightning-input
+                type="search"
+                label="Search fields or relationship targets"
+                value={fieldSearch}
+                onchange={handleFieldSearch}
+                data-field-search
+              ></lightning-input>
+              <lightning-input
+                type="checkbox"
+                label="Show relationship fields only"
+                checked={relationshipsOnly}
+                onchange={handleRelationshipsOnly}
+                class="slds-m-vertical_small"
+              ></lightning-input>
+              <p class="slds-m-bottom_small" role="status">
+                {matchingFieldCount} matching fields
+              </p>
+              <template lwc:if={hasFields}>
+                <lightning-datatable
+                  key-field="apiName"
+                  data={visibleFields}
+                  columns={columns}
+                  hide-checkbox-column
+                  onrowaction={handleFieldAction}
+                  data-fields
+                ></lightning-datatable>
+              </template>
+              <template lwc:else
+                ><p>No readable fields match your search.</p></template
+              >
+              <template lwc:if={showFieldPaging}>
+                <div class="paging">
+                  <lightning-button
+                    label="Previous fields"
+                    disabled={firstFieldPage}
+                    onclick={handlePreviousFields}
+                  ></lightning-button>
+                  <span>{fieldPageLabel}</span>
+                  <lightning-button
+                    label="Next fields"
+                    disabled={lastFieldPage}
+                    onclick={handleNextFields}
+                  ></lightning-button>
+                </div>
+              </template>
+            </lightning-tab>
+            <lightning-tab
+              label="Relationships"
+              value="relationships"
+              onactive={handleTabActive}
+            >
+              <p class="slds-m-bottom_medium">
+                Parent references are fields on this object pointing to another
+                object. Child relationships are fields on another object
+                pointing here. Self-references can appear in both directions.
+              </p>
+              <lightning-input
+                type="search"
+                label="Search relationships"
+                value={relationshipSearch}
+                onchange={handleRelationshipSearch}
+              ></lightning-input>
+              <lightning-combobox
+                label="Relationship direction"
+                value={relationshipFilter}
+                options={relationshipFilterOptions}
+                onchange={handleRelationshipFilter}
+              ></lightning-combobox>
+              <template lwc:if={isLoadingRelationships}>
+                <div class="loading">
+                  <lightning-spinner
+                    alternative-text="Loading relationships"
+                    size="small"
+                  ></lightning-spinner>
+                </div>
+              </template>
+              <template lwc:if={relationshipsError}>
+                <div role="alert" class="slds-text-color_error">
+                  {relationshipsError}
+                </div>
+                <lightning-button
+                  label="Retry relationships"
+                  onclick={loadRelationships}
+                ></lightning-button>
+              </template>
+              <template lwc:if={relationshipsLoaded}>
+                <p class="slds-m-vertical_small" role="status">
+                  {parentRelationshipCount} parent references ·
+                  {childRelationshipCount} child relationships ·
+                  {matchingRelationshipCount} matching rows
+                </p>
+              </template>
+              <template lwc:if={hasRelationships}>
+                <lightning-datatable
+                  key-field="rowKey"
+                  data={visibleRelationships}
+                  columns={relationshipColumns}
+                  hide-checkbox-column
+                  data-relationships
+                ></lightning-datatable>
+              </template>
+              <template lwc:if={noRelationships}
+                ><p>
+                  No readable relationships match your search and access
+                  permissions.
+                </p></template
+              >
+              <template lwc:if={showRelationshipPaging}>
+                <div class="paging">
+                  <lightning-button
+                    label="Previous relationships"
+                    disabled={firstRelationshipPage}
+                    onclick={handlePreviousRelationships}
+                  ></lightning-button>
+                  <span>{relationshipPageLabel}</span>
+                  <lightning-button
+                    label="Next relationships"
+                    disabled={lastRelationshipPage}
+                    onclick={handleNextRelationships}
+                  ></lightning-button>
+                </div>
+              </template>
+            </lightning-tab>
+            <lightning-tab
+              label="Record Types"
+              value="recordTypes"
+              onactive={handleTabActive}
+            >
+              <p class="slds-m-bottom_medium">
+                Active record types available to your user. Master is
+                Salesforce's system record type. Availability describes which
+                types your user can use when creating records.
+              </p>
+              <template lwc:if={hasRecordTypes}>
+                <lightning-datatable
+                  key-field="rowKey"
+                  data={recordTypes}
+                  columns={recordTypeColumns}
+                  hide-checkbox-column
+                  data-record-types
+                ></lightning-datatable>
+              </template>
+              <template lwc:else
+                ><p>
+                  No active record types are available to your user for this
+                  object.
+                </p></template
+              >
+            </lightning-tab>
+          </lightning-tabset>
+        </template>
+      </section>
+    </div>
+  </lightning-card>
+</template>

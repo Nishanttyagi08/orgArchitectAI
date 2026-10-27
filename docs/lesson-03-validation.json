@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-28",
+  "target": "OrgArchScratch",
+  "deploymentId": "0AfQL00000tLa5f0AC",
+  "status": "Succeeded",
+  "apexTests": 5,
+  "apexFailures": 0,
+  "coverage": [
+    {
+      "name": "OrgArchFieldDetail",
+      "total": 11,
+      "uncovered": 0
+    },
+    {
+      "name": "OrgArchObjectDetail",
+      "total": 5,
+      "uncovered": 0
+    },
+    {
+      "name": "OrgArchObjectExplorerController",
+      "total": 10,
+      "uncovered": 0
+    },
+    {
+      "name": "OrgArchSchemaService",
+      "total": 62,
+      "uncovered": 0
+    },
+    {
+      "name": "OrgArchObjectSummary",
+      "total": 3,
+      "uncovered": 0
+    }
+  ],
+  "lwcTests": 9,
+  "lwcSuites": 2,
+  "eslint": "passed",
+  "liveBrowserWalkthrough": "not performed",
+  "customObjectWalkthrough": "not performed"
+}

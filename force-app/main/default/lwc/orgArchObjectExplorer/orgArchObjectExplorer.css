@@ -1,0 +1,141 @@
+.explorer {
+  display: grid;
+  grid-template-columns: minmax(240px, 30%) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+.object-panel {
+  min-width: 0;
+}
+.object-list {
+  max-height: 34rem;
+  overflow-y: auto;
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem;
+}
+.object-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.object-button:hover {
+  background: #f3f3f3;
+}
+.object-button:focus-visible {
+  outline: 2px solid #0176d3;
+  outline-offset: -2px;
+}
+.object-button.selected {
+  background: #eef4ff;
+  box-shadow: inset 4px 0 #0176d3;
+}
+.object-label {
+  display: block;
+  font-weight: 700;
+}
+.object-api {
+  display: block;
+  color: #444;
+  font-size: 0.75rem;
+}
+.object-kind {
+  display: block;
+  margin-top: 0.25rem;
+  color: #444;
+  font-size: 0.7rem;
+}
+.detail-panel {
+  min-width: 0;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid #d8e6f4;
+  border-radius: 0.5rem;
+  background: #f5f9fd;
+  color: #31465b;
+}
+.summary-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #014486;
+}
+.section-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.property {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.property dt {
+  font-size: 0.75rem;
+  color: #444;
+  margin-bottom: 0.25rem;
+}
+.property dd {
+  font-weight: 600;
+}
+.field-inspector {
+  padding: 1rem;
+  border: 1px solid #91b9df;
+  border-radius: 0.5rem;
+  background: #f5f9fd;
+}
+.field-inspector:focus {
+  outline: 2px solid #0176d3;
+  outline-offset: 2px;
+}
+.inspector-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.loading {
+  position: relative;
+  min-height: 5rem;
+}
+.paging {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+@media (max-width: 48rem) {
+  .explorer {
+    grid-template-columns: 1fr;
+  }
+  .object-list {
+    max-height: 18rem;
+  }
+}
+@media (max-width: 30rem) {
+  .summary-grid,
+  .property-grid {
+    grid-template-columns: 1fr;
+  }
+  .inspector-heading {
+    flex-direction: column;
+  }
+}

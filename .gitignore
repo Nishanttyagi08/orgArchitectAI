@@ -6,6 +6,8 @@
 .sf/
 .sfdx/
 .localdevserver/
+# Local scratch-org comparison snapshot
+/verification/scratch-baseline/
 deploy-options.json
 
 # LWC VSCode autocomplete
