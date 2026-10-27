@@ -1,0 +1,86 @@
+<template>
+    <lightning-card
+        title="OrgArchitect AI"
+        icon-name="standard:apps"
+    >
+        <div class="slds-p-around_large">
+
+            <h1 class="slds-text-heading_medium">
+                Welcome to OrgArchitect AI
+            </h1>
+
+            <p class="slds-m-top_small">
+                Understand your org. Design with AI.
+                Deploy with confidence.
+            </p>
+
+            <div class="slds-m-top_large">
+
+                <lightning-layout multiple-rows>
+
+                    <lightning-layout-item
+                        size="12"
+                        medium-device-size="6"
+                        padding="around-small"
+                    >
+                        <lightning-card
+                            title="Org Intelligence"
+                            icon-name="standard:data_model"
+                        >
+                            <div class="slds-p-around_medium">
+                                <p>
+                                    Analyze Salesforce objects,
+                                    fields, and relationships.
+                                </p>
+
+                                <lightning-button
+                                    label="Explore Org"
+                                    variant="brand"
+                                    disabled
+                                    class="slds-m-top_medium"
+                                >
+                                </lightning-button>
+                            </div>
+                        </lightning-card>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        medium-device-size="6"
+                        padding="around-small"
+                    >
+                        <lightning-card
+                            title="AI Architecture Studio"
+                            icon-name="standard:service_resource"
+                        >
+                            <div class="slds-p-around_medium">
+                                <p>
+                                    Transform business requirements
+                                    into Salesforce metadata.
+                                </p>
+
+                                <lightning-button
+                                    label="Open AI Studio"
+                                    variant="brand"
+                                    disabled
+                                    class="slds-m-top_medium"
+                                >
+                                </lightning-button>
+                            </div>
+                        </lightning-card>
+                    </lightning-layout-item>
+
+                </lightning-layout>
+
+            </div>
+
+            <div class="slds-m-top_large">
+                <lightning-badge
+                    label="Version 0.1 - Development"
+                >
+                </lightning-badge>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>
