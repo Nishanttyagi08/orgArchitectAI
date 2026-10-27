@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+
+    <applicationVisibilities>
+        <application>OrgArchitect_AI</application>
+        <visible>true</visible>
+    </applicationVisibilities>
+
+    <description>
+        Provides access to the OrgArchitect AI
+        administration workspace.
+        Additional permissions will be added
+        as administrative features are developed.
+    </description>
+
+    <label>OrgArchitect Admin</label>
+
+    <tabSettings>
+        <tab>OrgArchitect_Home</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+
+</PermissionSet>
