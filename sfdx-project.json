@@ -1,0 +1,19 @@
+{
+  "packageDirectories": [
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": true,
+      "package": "OrgArch Manage Package",
+      "versionDescription": ""
+    }
+  ],
+  "name": "orgArchitectAI",
+  "namespace": "orgarch",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "68.0",
+  "packageAliases": {
+    "OrgArch Manage Package": "0Hoak0000006wfdCAA"
+  }
+}
